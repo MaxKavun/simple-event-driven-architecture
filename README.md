@@ -13,7 +13,7 @@ Function is able to extract all images which can be recognized by AWS Textract s
 
 ```
 terraform init
-terraform apply -var-file="default.tfvars
+terraform apply -var-file="default.tfvars"
 ```
 
 ### TODO
