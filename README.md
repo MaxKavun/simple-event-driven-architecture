@@ -9,7 +9,7 @@ Based on S3 + SQS + Lambda + SNS + Textract. Fully serveless
 
 Function is able to extract all images which can be recognized by AWS Textract service.
 
-### Usage (default folder for upload imags is images/)
+### Usage (default folder for upload images is images/)
 
 ```
 terraform init
