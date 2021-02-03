@@ -1,0 +1,15 @@
+{
+    "Version": "2008-10-17",
+    "Statement": [
+      {
+        "Sid": "Stmt1612168538544",
+        "Effect": "Allow",
+        "Principal": "*",
+        "Action": [
+          "sqs:SendMessage",
+          "sqs:DeleteMessage"
+        ],
+        "Resource": "*"
+      }
+    ]
+  }

@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 resource "aws_iam_role" "role_for_lambda" {
-  name               = "role_for_lambda"
+  name               = var.lambda_role_name
   assume_role_policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -31,7 +31,7 @@ EOF
 }
 
 resource "aws_iam_policy" "lambda_necessary_policies" {
-  name   = "lambda_policies"
+  name   = var.lambda_role_policy_name
   policy = file("${path.module}/lambda_policies.txt")
 }
 
@@ -42,14 +42,51 @@ resource "aws_iam_role_policy_attachment" "lambda-attach" {
 
 data "archive_file" "lambda_func" {
   type        = "zip"
-  source_file  = "${path.module}/lambda_function.py"
+  source_file = "${path.module}/lambda_function.py"
   output_path = "${path.module}/lambda.zip"
+}
+
+resource "aws_sqs_queue" "dead_letter_queue_for_converter" {
+  name                       = var.dead_letter_queue_name
+  visibility_timeout_seconds = var.sqs_dead_letter_queue_visibility_timeout
+  message_retention_seconds  = var.message_retention_seconds
+}
+
+resource "aws_sqs_queue" "image_to_convert_queue" {
+  name                       = var.sqs_queue_name
+  visibility_timeout_seconds = var.sqs_timeout_visibility
+  message_retention_seconds  = var.sqs_retention_period
+  policy                     = file("sqs_policy.json")
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.dead_letter_queue_for_converter.arn
+    maxReceiveCount     = var.sqs_dead_letters_count
+  })
 }
 
 resource "aws_lambda_function" "converter_func" {
   runtime       = "python3.8"
   filename      = "${path.module}/lambda.zip"
-  function_name = "pic_to_text_converter"
+  function_name = var.lambda_name
   role          = aws_iam_role.role_for_lambda.arn
-  handler       = "lambda_function.lambda_handler"
+  handler       = var.lambda_handler
+}
+
+resource "aws_lambda_event_source_mapping" "example" {
+  event_source_arn = aws_sqs_queue.image_to_convert_queue.arn
+  function_name    = aws_lambda_function.converter_func.arn
+}
+
+resource "aws_s3_bucket" "bucket" {
+  bucket = var.s3_name
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_notification" "bucket_notification" {
+  bucket = aws_s3_bucket.bucket.id
+
+  queue {
+    queue_arn     = aws_sqs_queue.image_to_convert_queue.arn
+    events        = var.s3_notification_events
+    filter_prefix = var.s3_path_for_images_input
+  }
 }
