@@ -11,10 +11,10 @@ Function is able to extract all images which can be recognized by AWS Textract s
 
 ### Usage (default folder for upload imags is images/)
 
-'''
+```
 terraform init
 terraform apply -var-file="default.tfvars
-'''
+```
 
 ### TODO
 
