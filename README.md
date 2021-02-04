@@ -9,6 +9,8 @@ Based on S3 + SQS + Lambda + SNS + Textract. Fully serveless
 
 Function is able to extract all images which can be recognized by AWS Textract service.
 
+To use AWS SES service in order to send email to random emails (not verified by AWS), you have to request disabling sandbox state
+
 ## Requirements
 
 | Name | Version |
@@ -35,7 +37,7 @@ terraform apply -var-file="default.tfvars"
 | s3_name | Lambda role name | `string` | `images-hosting-for-test-2021` | yes |
 | sqs_timeout_visibility | Lambda role name | `number` | `240` | yes |
 | sqs_retention_period | Lambda role name | `number` | `345600` | yes |
-| sqs_dead_letters_count | Lambda role name | `number` | `4` | yes |
+| sqs_dead_letters_count | Lambda role name | `number` | `2` | yes |
 | lambda_handler | Lambda role name | `string` | `lambda_function.lambda_handler` | yes |
 | s3_path_for_images_input | Lambda role name | `string` | `images/` | yes |
 | s3_path_for_images_output | Lambda role name | `string` | `text-documents/` | yes |
@@ -45,9 +47,15 @@ terraform apply -var-file="default.tfvars"
 
 ## Outputs
 
+| Name | Description | 
+|------|-------------|
+| s3\_input\_folder | Path for images to convert them |
+
 ## TODO
 
 - S3 presigned URL
-- email notifications
-> upload image > s3 event triggers Lambda > generate text, upload to S3 + generate S3 pre-sign URL for public usage + send it to email
-
+- ses email veritifaction (for sender)
+- read object tag that contains email address
+- try catch blocks
+- implement logging tool
+- config management

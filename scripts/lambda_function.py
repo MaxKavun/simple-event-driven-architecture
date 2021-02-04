@@ -12,7 +12,9 @@ def lambda_handler(event, context):
     file_name = "/tmp/" + s3_object.split('/')[-1]
     s3_download(bucket, s3_object, file_name)
     output_file = pic_to_text(file_name)
-    s3_upload(bucket, output_file)
+    path_for_object = s3_upload(bucket, output_file)
+    presigned_url = s3_generate_presigned_url(bucket, path_for_object)
+    ses_send_email(presigned_url)
     s3_remove_object(bucket, s3_object)
 
 def s3_download(bucket, s3_object, file_name):
@@ -21,7 +23,9 @@ def s3_download(bucket, s3_object, file_name):
 
 def s3_upload(bucket, file_name):
     s3 = boto3.client('s3')
-    s3.upload_file(file_name, bucket, f"{path_for_converted_images}{file_name.split('/')[-1]}")
+    path_for_object = f"{path_for_converted_images}{file_name.split('/')[-1]}"
+    s3.upload_file(file_name, bucket, path_for_object)
+    return path_for_object
 
 def s3_remove_object(bucket, object_path):
     s3 = boto3.client('s3')
@@ -29,6 +33,30 @@ def s3_remove_object(bucket, object_path):
         Bucket=bucket,
         Key=object_path
     )
+
+def s3_generate_presigned_url(bucket, object_path, expiration=3600):
+    s3_client = boto3.client('s3')
+    response = s3_client.s3_generate_presigned_url('get_object',
+                                                    Params={'Bucket': bucket,
+                                                            'Key': object_path},
+                                                    ExpriesIn=expiration)
+    return response
+
+def ses_send_email(presigned_url):
+    ses_client = boto3.client('ses')
+    sender = "Maksim Kavun <maxkavun@outlook.com>"
+    recipient = "Maksim_Kavun@epam.com"
+    subject = "Your link to the converted image"
+
+    body_html = f"""<html>
+                <head></head>
+                <body>
+                <h1>Your link to the conveted image</h1>
+                <p>{presigned_url}</p>
+                </body>
+                </html>
+                """  
+
 
 def pic_to_text(file_name):
     client = boto3.client('textract')
