@@ -42,8 +42,8 @@ resource "aws_iam_role_policy_attachment" "lambda-attach" {
 
 data "archive_file" "lambda_func" {
   type        = "zip"
-  source_file = "${path.module}/lambda_function.py"
-  output_path = "${path.module}/lambda.zip"
+  source_file = "${path.module}/scripts/lambda_function.py"
+  output_path = "${path.module}/scripts/lambda.zip"
 }
 
 resource "aws_sqs_queue" "dead_letter_queue_for_converter" {
@@ -65,7 +65,7 @@ resource "aws_sqs_queue" "image_to_convert_queue" {
 
 resource "aws_lambda_function" "converter_func" {
   runtime       = "python3.8"
-  filename      = "${path.module}/lambda.zip"
+  filename      = "${path.module}/scripts/lambda.zip"
   function_name = var.lambda_name
   role          = aws_iam_role.role_for_lambda.arn
   handler       = var.lambda_handler
