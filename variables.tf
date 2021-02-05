@@ -43,3 +43,6 @@ variable "sqs_dead_letter_queue_visibility_timeout" {
 variable "message_retention_seconds" {
   type = number
 }
+variable "email_sender" {
+  type = string
+}

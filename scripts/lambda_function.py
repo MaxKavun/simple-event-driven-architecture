@@ -1,5 +1,6 @@
 import boto3
 import json
+import os
 
 path_for_converted_images = "text-documents/" # TODO: Move all configs to separate config file
 
@@ -7,6 +8,8 @@ path_for_converted_images = "text-documents/" # TODO: Move all configs to separa
 
 def lambda_handler(event, context):
     body = eval(event['Records'][0]['body'])
+    if ('Records' not in body):
+        return True
     bucket = body['Records'][0]['s3']['bucket']['name']
     s3_object = body['Records'][0]['s3']['object']['key']
     file_name = "/tmp/" + s3_object.split('/')[-1]
@@ -36,26 +39,45 @@ def s3_remove_object(bucket, object_path):
 
 def s3_generate_presigned_url(bucket, object_path, expiration=3600):
     s3_client = boto3.client('s3')
-    response = s3_client.s3_generate_presigned_url('get_object',
+    response = s3_client.generate_presigned_url('get_object',
                                                     Params={'Bucket': bucket,
                                                             'Key': object_path},
-                                                    ExpriesIn=expiration)
+                                                    ExpiresIn=expiration)
     return response
 
 def ses_send_email(presigned_url):
     ses_client = boto3.client('ses')
-    sender = "Maksim Kavun <maxkavun@outlook.com>"
-    recipient = "Maksim_Kavun@epam.com"
+    charset = "UTF-8"
+    sender = os.environ['email_sender']
+    recipient = ["maksim_kavun@epam.com"] # TODO: recepient should come from object tag
     subject = "Your link to the converted image"
 
     body_html = f"""<html>
                 <head></head>
                 <body>
-                <h1>Your link to the conveted image</h1>
+                <h2>Your link to the converted image</h2>
                 <p>{presigned_url}</p>
                 </body>
                 </html>
-                """  
+                """ 
+    response = ses_client.send_email(
+        Destination={
+            "ToAddresses": recipient,
+        },
+        Message={
+            "Body": {
+                "Html": {
+                    "Charset": charset,
+                    "Data": body_html,
+                }
+            },
+            "Subject": {
+                "Charset": charset,
+                "Data": subject,
+            },
+        },
+        Source=sender,
+    )
 
 
 def pic_to_text(file_name):

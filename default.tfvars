@@ -13,3 +13,4 @@ s3_path_for_images_output                = "text-documents/"
 s3_notification_events                   = ["s3:ObjectCreated:*"]
 sqs_dead_letter_queue_visibility_timeout = 60
 message_retention_seconds                = 1209600
+email_sender                             = "John Doe <johndoe@outlook.com>"

@@ -69,6 +69,12 @@ resource "aws_lambda_function" "converter_func" {
   function_name = var.lambda_name
   role          = aws_iam_role.role_for_lambda.arn
   handler       = var.lambda_handler
+
+  environment {
+    variables = {
+      email_sender = var.email_sender
+    }
+  }
 }
 
 resource "aws_lambda_event_source_mapping" "example" {
@@ -77,8 +83,9 @@ resource "aws_lambda_event_source_mapping" "example" {
 }
 
 resource "aws_s3_bucket" "bucket" {
-  bucket = var.s3_name
-  acl    = "private"
+  bucket        = var.s3_name
+  acl           = "private"
+  force_destroy = true
 }
 
 resource "aws_s3_bucket_notification" "bucket_notification" {

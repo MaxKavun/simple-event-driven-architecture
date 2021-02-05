@@ -53,9 +53,10 @@ terraform apply -var-file="default.tfvars"
 
 ## TODO
 
-- S3 presigned URL
-- ses email veritifaction (for sender)
-- read object tag that contains email address
-- try catch blocks
-- implement logging tool
-- config management
+- [x] S3 presigned URL
+- [x] ses email veritifaction (for sender)
+- [ ] read object tag that contains email address
+- [ ] try catch blocks
+- [ ] implement logging tool
+- [ ] config management
+- [ ] adjust policies instead of wildcard

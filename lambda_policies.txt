@@ -14,7 +14,8 @@
                 "logs:CreateLogStream",
                 "logs:PutLogEvents",
                 "s3:*",
-                "sqs:*"
+                "sqs:*",
+                "ses:*"
             ],
             "Resource": "*"
         }
