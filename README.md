@@ -44,6 +44,7 @@ terraform apply -var-file="default.tfvars"
 | s3_notification_events | Lambda role name | `list(string)` | `["s3:ObjectCreated:*"]` | yes |
 | sqs_dead_letter_queue_visibility_timeout | Lambda role name | `number` | `60` | yes |
 | message_retention_seconds | Lambda role name | `number` | `1209600` | yes |
+| email_sender | Email which will be sender | `string` | `John Doe <johndoe@outlook.com>` | yes |
 
 ## Outputs
 

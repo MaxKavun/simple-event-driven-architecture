@@ -49,7 +49,7 @@ def ses_send_email(presigned_url):
     ses_client = boto3.client('ses')
     charset = "UTF-8"
     sender = os.environ['email_sender']
-    recipient = ["maksim_kavun@epam.com"] # TODO: recepient should come from object tag
+    recipient = ["my-email@mail.ru"] # TODO: recepient should come from object tag
     subject = "Your link to the converted image"
 
     body_html = f"""<html>
