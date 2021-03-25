@@ -5,10 +5,15 @@ terraform {
       version = "~> 3.26"
     }
   }
+  backend "s3" {
+    bucket = "my-test-bucket-maxkavun-dev"
+    key    = "terraform/dev-env"
+    region = "eu-north-1"
+  }
 }
 
 provider "aws" {
-  region = "eu-west-1"
+  region = "eu-north-1"
 }
 
 resource "aws_iam_role" "role_for_lambda" {
