@@ -11,7 +11,3 @@ workflows:
       - init
       - plan:
           extra_args: ["-var-file", "default.tfvars"]
-    apply:
-      steps:
-      - apply:
-          extra_args: ["-var-file", "default.tfvars"]
