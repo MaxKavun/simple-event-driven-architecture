@@ -2,7 +2,7 @@ version: 3
 projects:
 - name: simple-event-driven-architecture
   dir: .
-  apply_requirements: [mergeable, approved]
+  apply_requirements: [mergeable]
   workflow: mycustomworkflow
 workflows:
   mycustomworkflow:
