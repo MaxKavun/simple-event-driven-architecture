@@ -6,7 +6,7 @@ terraform {
     }
   }
   backend "s3" {
-    bucket = "my-test-bucket-maxkavun-dev	"
+    bucket = "my-test-bucket-maxkavun-dev"
     key    = "terraform/dev-env"
     region = "eu-north-1"
   }
