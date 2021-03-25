@@ -1,3 +1,4 @@
+version: 3
 projects:
 - name: simple-event-driven-architecture
   dir: .
